@@ -6,7 +6,7 @@
       // this enables stricter inference for data properties on `this`
       "strict": false,
       // if using webpack 2+ or rollup, to leverage tree shaking:
-      "module": "es2015",
+      "module": "es6",
       "moduleResolution": "node",
       "sourceMap": true,
       "lib": [
@@ -14,7 +14,8 @@
         "dom"
       ],
       "noImplicitThis": false,
-      "allowJs": true
+      "allowJs": true,
+      "experimentalDecorators": true
     },
     "include": [
       "./src/**/*"

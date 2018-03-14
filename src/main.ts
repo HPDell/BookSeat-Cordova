@@ -15,7 +15,7 @@ import './css/icons.css';
 import './css/app.css';
 
 // Import Routes
-import Routes from './routes'
+import router from './router'
 
 // Import App Component
 import App from './app.vue';
@@ -37,11 +37,10 @@ new Application({
     id: 'io.framework7.testapp', // App bundle ID
     name: 'Framework7', // App name
     theme: 'auto', // Automatic theme detection
-    // App routes
-    routes: Routes,
   },
   // Register App Component
   components: {
     app: App
-  }
+  },
+  router
 });
