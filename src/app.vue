@@ -1,13 +1,21 @@
-<template lang="pug">
-  #app
-    f7-statusbar
-    router-view(main)
+<template>
+  <!-- App -->
+  <div id="app">
+
+    <!-- Statusbar -->
+    <f7-statusbar></f7-statusbar>
+
+    <!-- Main View -->
+    <f7-view id="main-view" url="/" main></f7-view>
+
+  </div>
 </template>
 
-
-<script lang="ts">
-import Vue from 'vue'
-export default Vue.extend({
-  name: "app",
-})
+<script>
+import Layout from './components/Layout.vue'
+export default {
+  components: {
+    'main-layout': Layout
+  }
+}
 </script>

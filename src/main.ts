@@ -15,8 +15,8 @@ import './css/icons.css';
 import './css/app.css';
 
 // Import Routes
-import router from './router'
-// import Routes from './routes'
+// import router from './router'
+import Routes from './routes'
 
 // Import App Component
 import App from './app.vue';
@@ -28,25 +28,20 @@ import VueBookSysWebParams from './plugin/vue-book-sys-webparams.js'
 Vue.use(Framework7Vue, Framework7)
 Vue.use(VueBookSysWebParams)
 
-// Init App
-class Application extends Vue {
-  constructor(options?: any) {
-    super(options)
-  }
-}
-new Application({
+new Vue({
   el: '#app',
   template: '<app/>',
   // Init Framework7 by passing parameters here
+  //@ts-ignore
   framework7: {
     id: 'io.framework7.testapp', // App bundle ID
     name: 'Framework7', // App name
     theme: 'auto', // Automatic theme detection
-    root: '#app'
+    root: '#app',
+    routes: Routes
   },
   // Register App Component
   components: {
     app: App
-  },
-  router
+  }
 });

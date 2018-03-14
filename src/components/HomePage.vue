@@ -20,8 +20,8 @@
 <script lang="ts">
 import Vue from 'vue'
 import Component from 'vue-class-component'
-import params from '../plugin/vue-book-sys-webparams'
 import Framework7 from 'framework7/dist/framework7.esm.bundle.js'
+import params from '../plugin/vue-book-sys-webparams'
 
 @Component
 export default class HomePage extends Vue {
@@ -38,10 +38,7 @@ export default class HomePage extends Vue {
     endTime: ""
   }
   beforeCreate() {
-    if (params.userID == "") {
-      var app = new Framework7();
-      this.$router.push('/login/')
-    }
+    
   }
 }
 </script>

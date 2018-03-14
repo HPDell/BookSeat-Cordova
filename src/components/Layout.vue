@@ -13,13 +13,17 @@
 <script lang="ts">
 import Vue from 'vue'
 import HomePage from './HomePage.vue'
+import params from '../plugin/vue-book-sys-webparams'
+
 export default Vue.extend({
   name: "Layout",
   components: {
     'home-page': HomePage
   },
-  mounted: function () {
-    
+  beforeMount() {
+    if (params.userID == "") {
+      this.$f7router.navigate('/login/')
+    }
   }
 })
 </script>
