@@ -1,6 +1,7 @@
 <template lang="pug">
   #app
-    router-view
+    f7-statusbar
+    router-view(main)
 </template>
 
 

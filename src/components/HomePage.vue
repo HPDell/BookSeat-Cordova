@@ -1,5 +1,5 @@
 <template lang="pug">
-  f7-page-content
+  f7-page
     f7-navbar
       f7-nav-left
       f7-nav-title 我的信息
@@ -20,12 +20,14 @@
 <script lang="ts">
 import Vue from 'vue'
 import Component from 'vue-class-component'
+import params from '../plugin/vue-book-sys-webparams'
+import Framework7 from 'framework7/dist/framework7.esm.bundle.js'
 
 @Component
 export default class HomePage extends Vue {
   user = {
-    userID: "2014302590145",
-    userName: "胡奕公"
+    userID: params.userID,
+    userName: params.userName
   }
   seat = {
     building: "",
@@ -34,6 +36,12 @@ export default class HomePage extends Vue {
     seatID: "",
     startTime: "",
     endTime: ""
+  }
+  beforeCreate() {
+    if (params.userID == "") {
+      var app = new Framework7();
+      this.$router.push('/login/')
+    }
   }
 }
 </script>

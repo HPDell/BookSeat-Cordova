@@ -16,12 +16,17 @@ import './css/app.css';
 
 // Import Routes
 import router from './router'
+// import Routes from './routes'
 
 // Import App Component
 import App from './app.vue';
 
+// Import Global Params;
+import VueBookSysWebParams from './plugin/vue-book-sys-webparams.js'
+
 // Init F7 Vue Plugin
 Vue.use(Framework7Vue, Framework7)
+Vue.use(VueBookSysWebParams)
 
 // Init App
 class Application extends Vue {
@@ -37,6 +42,7 @@ new Application({
     id: 'io.framework7.testapp', // App bundle ID
     name: 'Framework7', // App name
     theme: 'auto', // Automatic theme detection
+    root: '#app'
   },
   // Register App Component
   components: {
