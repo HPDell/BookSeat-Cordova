@@ -8,23 +8,28 @@ import Framework7 from 'framework7/dist/framework7.esm.bundle.js';
 import Framework7Vue from 'framework7-vue/dist/framework7-vue.esm.bundle.js';
 
 // Import F7 Styles
-import Framework7Styles from 'framework7/dist/css/framework7.css';
+import 'framework7/dist/css/framework7.css';
 
 // Import Icons and App Custom Styles
-import IconsStyles from './css/icons.css';
-import AppStyles from './css/app.css';
+import './css/icons.css';
+import './css/app.css';
 
 // Import Routes
-import Routes from './routes.js'
+import Routes from './routes'
 
 // Import App Component
-import App from './app';
+import App from './app.vue';
 
 // Init F7 Vue Plugin
 Vue.use(Framework7Vue, Framework7)
 
 // Init App
-new Vue({
+class Application extends Vue {
+  constructor(options?: any) {
+    super(options)
+  }
+}
+new Application({
   el: '#app',
   template: '<app/>',
   // Init Framework7 by passing parameters here
