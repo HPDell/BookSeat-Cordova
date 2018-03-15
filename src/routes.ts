@@ -1,8 +1,8 @@
 import Layout from './components/Layout.vue';
-import Home from './components/HomePage.vue';
+import HomePage from './components/HomePage.vue';
 import LoginPage from './components/Login.vue'
 import NotFoundPage from './pages/not-found.vue'
-import HomePage from './pages/home.vue'
+import Home from './pages/home.vue'
 import AboutPage from './pages/about.vue';
 import FormPage from './pages/form.vue';
 import DynamicRoutePage from './pages/dynamic-route.vue';
@@ -18,6 +18,10 @@ export default [
   {
     path: '/login/',
     component: LoginPage,
+  },
+  {
+    path: '/home/',
+    component: Home,
   },
   {
     path: '/panel-left/',
