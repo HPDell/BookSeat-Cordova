@@ -1,7 +1,7 @@
 <template>
-  <f7-page style="padding: 40px 0px;">
+  <f7-page id="login-page">
     <f7-login-screen-title>自习助手的助手</f7-login-screen-title>
-    <f7-list form inset>
+    <f7-list form inset inline-labels>
       <f7-list-item>
         <f7-label>ID</f7-label>
         <f7-input type="text" placeholder="请输入ID号" :value="userID" @input="userID = $event.target.value"></f7-input>
@@ -13,6 +13,10 @@
       <f7-list-item>
         <f7-label>服务器地址</f7-label>
         <f7-input type="text" placeholder="地址" :value="host" @input="host = $event.target.value"></f7-input>
+      </f7-list-item>
+      <f7-list-item>
+        <span slot="title">记住该地址</span>
+        <f7-toggle slot="after" type="text" name="remember" value="remember" @change="remember = $event.target.checked"></f7-toggle>
       </f7-list-item>
     </f7-list>
     <f7-list inset>
@@ -35,8 +39,13 @@ import { LoginData } from "../models/LoginData";
 export default class Login extends Vue {
   userID: string = "";
   userPassword: string = "";
-  host: string = params.host;
+  host: string = localStorage.host || params.host;
   vm: Vue;
+  remember: boolean = true;
+
+  /**
+   * 登录
+   */
   login(): void {
     // 显示加载符
     var app = new Framework7();
@@ -55,7 +64,9 @@ export default class Login extends Vue {
       if (body.status == "success") {
         params.token = body.data.token;
         params.userID = this.userID;
-        // params.userPassword = this.userPassword;
+        params.userPassword = this.userPassword;
+        params.host = this.host;
+        localStorage.setItem("host", this.host);
         // @ts-ignore
         this.$f7router.navigate("/");
       } else {
@@ -74,5 +85,25 @@ export default class Login extends Vue {
       }).open();
     })
   }
+
+  /**
+   * 是否记住服务器地址
+   * @param remember 是否记住
+   */
+  rememberChanged(remember: Boolean) {
+    console.log(`是否记住：${remember}`)
+  }
 }
 </script>
+
+<style scoped>
+#login-page {
+  background-image: url("../assets/loginbg.jpg");
+  background-repeat: round;
+  padding: 40px 0px;
+}
+
+.login-screen-title {
+  color: white;
+}
+</style>

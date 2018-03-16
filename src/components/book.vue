@@ -23,9 +23,9 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 
 @Component({
-  // props: {
-  //   bookType: String
-  // }
+  props: {
+    bookType: String
+  }
 })
 export default class BookPage extends Vue {
   building: number = null;

@@ -1,5 +1,5 @@
 <template lang="pug">
-  f7-page
+  f7-page(style="padding-bottom: 50px;")
     f7-navbar
       f7-nav-left
       f7-nav-title 我的信息
