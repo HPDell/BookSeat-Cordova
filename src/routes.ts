@@ -1,5 +1,6 @@
-import Layout from './components/Layout.vue';
-import HomePage from './components/HomePage.vue';
+import Layout from './components/layout.vue';
+import HomePage from './components/home.vue';
+import BookPage from './components/book.vue'
 import LoginPage from './components/Login.vue'
 import NotFoundPage from './pages/not-found.vue'
 import Home from './pages/home.vue'
@@ -13,14 +14,26 @@ import PanelRightPage from './pages/panel-right.vue';
 export default [
   {
     path: '/',
-    component: Layout
+    component: Layout,
+    tabs: [
+      {
+        path: '/',
+        id: 'home',
+        component: HomePage
+      },
+      {
+        path: '/book/',
+        id: 'book',
+        component: BookPage
+      }
+    ]
   },
   {
     path: '/login/',
     component: LoginPage,
   },
   {
-    path: '/home/',
+    path: '/homepage/',
     component: Home,
   },
   {
