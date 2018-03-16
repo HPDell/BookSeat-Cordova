@@ -16,7 +16,7 @@
       </f7-list-item>
       <f7-list-item>
         <span slot="title">记住该地址</span>
-        <f7-toggle slot="after" type="text" name="remember" value="remember" @change="remember = $event.target.checked"></f7-toggle>
+        <f7-toggle slot="after" type="text" name="remember" value="remember" :checked="remember" @change="remember = $event.target.checked"></f7-toggle>
       </f7-list-item>
     </f7-list>
     <f7-list inset>
@@ -28,7 +28,6 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import router from '../router';
 import params from '../plugin/vue-book-sys-webparams';
 import Framework7 from 'framework7/dist/framework7.esm.bundle.js';
 import axios from 'axios';
@@ -52,7 +51,7 @@ export default class Login extends Vue {
     app.preloader.show();
     axios({
       method: "GET",
-      url: `http://${params.host}/rest/auth`,
+      url: `https://${params.host}:8443/rest/auth`,
       params: {
         username: this.userID,
         password: this.userPassword
@@ -62,11 +61,16 @@ export default class Login extends Vue {
       var body: RestResponse<LoginData> = response.data;
       console.log(body);
       if (body.status == "success") {
+        // Save parameters.
         params.token = body.data.token;
         params.userID = this.userID;
         params.userPassword = this.userPassword;
         params.host = this.host;
+        params.token = body.data.token;
         localStorage.setItem("host", this.host);
+        // Set axios defaults.
+        axios.defaults.baseURL = `https://${params.host}:8443/`;
+        axios.defaults.headers.common['token'] = params.token;
         // @ts-ignore
         this.$f7router.navigate("/");
       } else {

@@ -6,6 +6,7 @@ function VueBookSysWebParams(options) {
   this.userName = "";
   this.userPassword = "";
   this.host = "seat.lib.whu.edu.cn";
+  this.token = "";
   if (options) {
     for (const key in options) {
       if (options.hasOwnProperty(key)) {

@@ -1,5 +1,5 @@
 <template lang="pug">
-  f7-page(style="padding-bottom: 50px;")
+  f7-page
     f7-navbar
       f7-nav-left
       f7-nav-title 我的信息
@@ -8,14 +8,16 @@
     f7-list
       f7-list-item(title="学号", :after="user.userID")
       f7-list-item(title="姓名", :after="user.userName")
+      f7-list-item(title="状态", :after="user.status")
     f7-block-title 座位信息
     f7-list
-      f7-list-item(title="场馆", :after="user.building")
-      f7-list-item(title="楼层", :after="user.floor")
-      f7-list-item(title="房间", :after="user.room")
-      f7-list-item(title="座位号", :after="user.seatID")
-      f7-list-item(title="开始时间", :after="user.startTime")
-      f7-list-item(title="结束时间", :after="user.endTime")
+      f7-list-item(title="场馆", :after="seat.building")
+      f7-list-item(title="楼层", :after="seat.floor")
+      f7-list-item(title="房间", :after="seat.room")
+      f7-list-item(title="座位号", :after="seat.seatID")
+      f7-list-item(title="开始时间", :after="seat.startTime")
+      f7-list-item(title="结束时间", :after="seat.endTime")
+      f7-list-item(title="离馆时间", :after="seat.leaveTime" v-if="seat.leaveTime")
     f7-block-title 操作
     f7-list
       f7-list-button(title="释放")
@@ -25,14 +27,18 @@
 <script lang="ts">
 import Vue from 'vue'
 import Component from 'vue-class-component'
-import Framework7 from 'framework7/dist/framework7.esm.bundle.js'
 import params from '../plugin/vue-book-sys-webparams'
+import axios from 'axios'
+import { RestResponse } from "../models/RestResponse";
+import { UserData } from "../models/UserData";
+import { UserReservationData, UserReservation } from "../models/UserReservationData";
 
 @Component
 export default class HomePage extends Vue {
   user = {
     userID: params.userID,
-    userName: params.userName
+    userName: params.userName,
+    status: ""
   }
   seat = {
     building: "",
@@ -40,10 +46,57 @@ export default class HomePage extends Vue {
     room: "",
     seatID: "",
     startTime: "",
-    endTime: ""
+    endTime: "",
+    leaveTime: null
   }
-  beforeCreate() {
-    
+  async mounted() {
+    if (!(params.token && params.token != "")) {
+      return;
+    }
+    // Fetch data.
+    try {
+      var user_response = await axios({
+        url: "/rest/v2/user/",
+        method: "GET"
+      });
+      var user_rest: RestResponse<UserData> = user_response.data;
+      if (user_rest.status == "success") {
+        this.user.userName = user_rest.data.name;
+        this.user.status = user_rest.data.status;
+      } else {
+        throw "请求不正确";
+      }
+    } catch (error) {
+      // @ts-ignore
+      this.$f7.toast.create({
+        test: "获取用户信息失败",
+        position: "top"
+      })
+    }
+    try {
+      var reservation_response = await axios({
+        url: "/rest/v2/user/reservations",
+        method: "GET"
+      });
+      var reservation_rest: RestResponse<Array<UserReservationData>> = reservation_response.data;
+      if (reservation_rest.status == "success") {
+        var reservation = new UserReservation(reservation_rest.data.pop());
+        this.seat.building = reservation.building;
+        this.seat.floor = reservation.floor + "层";
+        this.seat.seatID = reservation.seatId.toString();
+        this.seat.startTime = reservation.begin;
+        this.seat.endTime = reservation.end;
+        this.seat.leaveTime = reservation.awayBegin;
+      } else {
+        throw "服务器返回错误"
+      }
+    } catch (error) {
+      // @ts-ignore
+      this.$f7.toast.create({
+        test: "获取用户信息失败",
+        position: "top"
+      })
+    }
   }
 }
 </script>
