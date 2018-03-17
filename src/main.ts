@@ -10,6 +10,7 @@ import Framework7Vue from 'framework7-vue/dist/framework7-vue.esm.bundle.js';
 // Import F7 Styles
 import 'framework7/dist/css/framework7.css';
 
+
 // Import Icons and App Custom Styles
 import './css/icons.css';
 import './css/app.css';
@@ -34,10 +35,9 @@ new Vue({
   // Init Framework7 by passing parameters here
   //@ts-ignore
   framework7: {
-    id: 'io.framework7.testapp', // App bundle ID
+    id: 'huyg.site', // App bundle ID
     name: 'Framework7', // App name
     theme: 'auto', // Automatic theme detection
-    root: '#app',
     routes: Routes
   },
   // Register App Component

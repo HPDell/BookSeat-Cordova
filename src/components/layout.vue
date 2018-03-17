@@ -28,7 +28,7 @@ export default Vue.extend({
     }
   },
   beforeMount() {
-    if (params.userID == "") {
+    if (params.token || params.token == "") {
       this.$f7router.navigate('/login/')
     }
   }

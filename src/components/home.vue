@@ -1,9 +1,6 @@
 <template lang="pug">
   f7-page
-    f7-navbar
-      f7-nav-left
-      f7-nav-title 我的信息
-      f7-nav-right
+    f7-navbar(title="我的信息")
     f7-block-title 基本信息
     f7-list
       f7-list-item(title="学号", :after="user.userID")
@@ -14,7 +11,7 @@
       f7-list-item(title="场馆", :after="seat.building")
       f7-list-item(title="楼层", :after="seat.floor")
       f7-list-item(title="房间", :after="seat.room")
-      f7-list-item(title="座位号", :after="seat.seatID")
+      f7-list-item(title="座位号", :after="seat.seatNumber")
       f7-list-item(title="开始时间", :after="seat.startTime")
       f7-list-item(title="结束时间", :after="seat.endTime")
       f7-list-item(title="离馆时间", :after="seat.leaveTime" v-if="seat.leaveTime")
@@ -50,7 +47,7 @@ export default class HomePage extends Vue {
     endTime: "",
     leaveTime: null
   }
-  async mounted() {
+  async beforeMount() {
     if (!(params.token && params.token != "")) {
       return;
     }
@@ -71,7 +68,8 @@ export default class HomePage extends Vue {
       // @ts-ignore
       this.$f7.toast.create({
         test: "获取用户信息失败",
-        position: "top"
+        position: "top",
+        cancelTimeout: 2000
       })
     }
     try {
@@ -84,7 +82,7 @@ export default class HomePage extends Vue {
         var reservation = new UserReservation(reservation_rest.data.pop());
         this.seat.building = reservation.building;
         this.seat.floor = reservation.floor + "层";
-        this.seat.room = reservation.room + "区";
+        this.seat.room = reservation.room;
         this.seat.seatID = reservation.seatId;
         this.seat.seatNumber = reservation.seatNumber;
         this.seat.startTime = reservation.begin;
@@ -97,7 +95,8 @@ export default class HomePage extends Vue {
       // @ts-ignore
       this.$f7.toast.create({
         test: "获取用户信息失败",
-        position: "top"
+        position: "top",
+        closeTimeout: 2000
       }).open();
     }
   }

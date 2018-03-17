@@ -14,8 +14,7 @@
 <script>
 import Layout from './components/layout.vue'
 export default {
-  components: {
-    'main-layout': Layout
-  }
+  name: "app",
 }
 </script>
+

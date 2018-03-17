@@ -1,14 +1,12 @@
 <template lang="pug">
   f7-page
-    f7-navbar
-      f7-nav-left
-      f7-nav-title 预约座位
-      f7-nav-right
+    f7-navbar(title="预约座位")
     f7-block-title 选择场馆
     f7-list
-      f7-list-item(v-for="building in params.buildings" :title="building.buildingName", radio, name="targetBuildingID", :value="building.buildingID", :checked="targetBuildingID == building.buildingID", @change="targetBuildingID = $event.target.value")
+      f7-list-item(v-for="building in buildings" :key="building.buildingID" :title="building.buildingName", radio, name="targetBuildingID", :value="building.buildingID", :checked="targetBuildingID == building.buildingID", @change="targetBuildingID = $event.target.value")
     f7-block-title 选择日期
-      f7-list-item(v-for="bookDate in params.avalibleDates" :title="bookDate", radio, name="bookDate", :value="bookDate", :checked="targetDate == bookDate" @change="targetDate = $event.target.value")
+    f7-list
+      f7-list-item(v-for="(bookDate, index) in avalibleDates" :key="index" :title="bookDate", radio, name="bookDate", :value="bookDate", :checked="targetDate == bookDate" @change="targetDate = $event.target.value")
     f7-block-title 查询方式
     f7-list
         f7-list-item(title="全部", :link="'/book/' + bookType +'/byall/'")
@@ -28,21 +26,31 @@ import axios,{ AxiosResponse } from "axios";
 @Component({
   props: {
     bookType: String
+  },
+  watch: {
+    buildings: function (newValue:Array<LibraryBuilding>) {
+      params.buildings = newValue;
+    },
+    avalibleDates: function (newValue:Array<string>) {
+      params.avalibleDates = newValue;
+    }
   }
 })
 export default class BookPage extends Vue {
-  targetBuildingID: number;
-  targetDate: string;
+  targetBuildingID: number = -1;
+  targetDate: string = "";
+  buildings: Array<LibraryBuilding> = params.buildings;
+  avalibleDates: Array<string> = params.avalibleDates;
   async fetchBuildings() {
     try {
       var buildings_rest: AxiosResponse<RestResponse<BuildingFilterData>> = await axios({
         url: "rest/v2/free/filters"
       });
       if (buildings_rest.data.status == "success") {
-        params.buildings = buildings_rest.data.data.buildings.map((value) => {
+        this.buildings = buildings_rest.data.data.buildings.map((value) => {
           return new LibraryBuilding(value);
         })
-        params.avalibleDates = buildings_rest.data.data.dates;
+        this.avalibleDates = buildings_rest.data.data.dates;
       } else {
         throw "服务器返回错误";
       }
@@ -50,15 +58,17 @@ export default class BookPage extends Vue {
       // @ts-ignore
       this.$f7.toast.create({
         text: "获取场馆数据失败：" + error,
-        position: "top" 
+        position: "top" ,
+        closeTimeout: 2000
       }).open();
     }
   }
-  mounted() {
+  async mounted() {
     if (!(params.buildings && params.buildings.length > 0)) {
-      this.fetchBuildings();
+      await this.fetchBuildings();
     }
   }
+
 
 }
 </script>
