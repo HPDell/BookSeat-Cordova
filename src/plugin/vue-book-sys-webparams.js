@@ -8,8 +8,8 @@ function VueBookSysWebParams(options) {
   this.userPassword = "";
   this.host = "seat.lib.whu.edu.cn";
   this.token = "";
-  this.buildings = new LibraryBuilding[];
-  this.avalibleDates = new string[];
+  this.buildings = [];
+  this.avalibleDates = [];
 
   if (options) {
     for (const key in options) {

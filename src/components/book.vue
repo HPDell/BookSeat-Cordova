@@ -6,7 +6,9 @@
       f7-nav-right
     f7-block-title 选择场馆
     f7-list
-      f7-list-item(v-for="building in buildings" :title="building.buildingName", radio, name="targetBuildingID", :value="building.buildingID", :checked="targetBuildingID == building.buildingID", @change="targetBuildingID = $event.target.value")
+      f7-list-item(v-for="building in params.buildings" :title="building.buildingName", radio, name="targetBuildingID", :value="building.buildingID", :checked="targetBuildingID == building.buildingID", @change="targetBuildingID = $event.target.value")
+    f7-block-title 选择日期
+      f7-list-item(v-for="bookDate in params.avalibleDates" :title="bookDate", radio, name="bookDate", :value="bookDate", :checked="targetDate == bookDate" @change="targetDate = $event.target.value")
     f7-block-title 查询方式
     f7-list
         f7-list-item(title="全部", :link="'/book/' + bookType +'/byall/'")
@@ -30,16 +32,17 @@ import axios,{ AxiosResponse } from "axios";
 })
 export default class BookPage extends Vue {
   targetBuildingID: number;
-  buildings: Array<LibraryBuilding> = params.buildings;
+  targetDate: string;
   async fetchBuildings() {
     try {
       var buildings_rest: AxiosResponse<RestResponse<BuildingFilterData>> = await axios({
         url: "rest/v2/free/filters"
       });
       if (buildings_rest.data.status == "success") {
-        this.buildings = buildings_rest.data.data.buildings.map((value) => {
+        params.buildings = buildings_rest.data.data.buildings.map((value) => {
           return new LibraryBuilding(value);
         })
+        params.avalibleDates = buildings_rest.data.data.dates;
       } else {
         throw "服务器返回错误";
       }
@@ -52,7 +55,7 @@ export default class BookPage extends Vue {
     }
   }
   mounted() {
-    if (!(this.buildings && this.buildings.length > 0)) {
+    if (!(params.buildings && params.buildings.length > 0)) {
       this.fetchBuildings();
     }
   }
