@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import { LibraryBuilding } from "../models/LibraryModel";
 
 function VueBookSysWebParams(options) {
   this.token = "";
@@ -7,6 +8,9 @@ function VueBookSysWebParams(options) {
   this.userPassword = "";
   this.host = "seat.lib.whu.edu.cn";
   this.token = "";
+  this.buildings = new LibraryBuilding[];
+  this.avalibleDates = new string[];
+
   if (options) {
     for (const key in options) {
       if (options.hasOwnProperty(key)) {

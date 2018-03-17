@@ -7,6 +7,9 @@
     </f7-block>
   </f7-page>
 </template>
-<script>
-  export default {};
+<script lang="ts">
+import Vue from 'vue'
+export default Vue.extend({
+  name: "NotFound"
+})
 </script>

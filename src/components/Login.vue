@@ -102,12 +102,6 @@ export default class Login extends Vue {
 
 <style scoped>
 #login-page {
-  background-image: url("../assets/loginbg.jpg");
-  background-repeat: round;
   padding: 40px 0px;
-}
-
-.login-screen-title {
-  color: white;
 }
 </style>

@@ -44,7 +44,8 @@ export default class HomePage extends Vue {
     building: "",
     floor: "",
     room: "",
-    seatID: "",
+    seatID: 0,
+    seatNumber: 0,
     startTime: "",
     endTime: "",
     leaveTime: null
@@ -83,7 +84,9 @@ export default class HomePage extends Vue {
         var reservation = new UserReservation(reservation_rest.data.pop());
         this.seat.building = reservation.building;
         this.seat.floor = reservation.floor + "层";
-        this.seat.seatID = reservation.seatId.toString();
+        this.seat.room = reservation.room + "区";
+        this.seat.seatID = reservation.seatId;
+        this.seat.seatNumber = reservation.seatNumber;
         this.seat.startTime = reservation.begin;
         this.seat.endTime = reservation.end;
         this.seat.leaveTime = reservation.awayBegin;
@@ -95,7 +98,7 @@ export default class HomePage extends Vue {
       this.$f7.toast.create({
         test: "获取用户信息失败",
         position: "top"
-      })
+      }).open();
     }
   }
 }
