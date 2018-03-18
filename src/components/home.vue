@@ -1,13 +1,17 @@
 <template lang="pug">
-  f7-page
-    f7-navbar(title="我的信息")
+  div
+    f7-navbar
+      f7-nav-left
+      f7-nav-title 我的信息
+      f7-nav-right
     f7-block-title 基本信息
     f7-list
       f7-list-item(title="学号", :after="user.userID")
       f7-list-item(title="姓名", :after="user.userName")
       f7-list-item(title="状态", :after="user.status")
     f7-block-title 座位信息
-    f7-list
+    f7-list(v-if="hasSeatInfo")
+      f7-list-item(title="预约情况", :after="seat.status")
       f7-list-item(title="场馆", :after="seat.building")
       f7-list-item(title="楼层", :after="seat.floor")
       f7-list-item(title="房间", :after="seat.room")
@@ -15,16 +19,17 @@
       f7-list-item(title="开始时间", :after="seat.startTime")
       f7-list-item(title="结束时间", :after="seat.endTime")
       f7-list-item(title="离馆时间", :after="seat.leaveTime" v-if="seat.leaveTime")
-    f7-block-title 操作
-    f7-list
-      f7-list-button(title="释放")
-      f7-list-button(title="改签")
+    f7-block(v-else) 无
+    template(v-if="hasSeatInfo")
+      f7-block-title 操作
+      f7-list
+        f7-list-button(title="释放")
+        f7-list-button(title="改签")
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
 import Component from 'vue-class-component'
-import params from '../plugin/vue-book-sys-webparams'
 import axios from 'axios'
 import { RestResponse } from "../models/RestResponse";
 import { UserData } from "../models/UserData";
@@ -33,8 +38,8 @@ import { UserReservationData, UserReservation } from "../models/UserReservationD
 @Component
 export default class HomePage extends Vue {
   user = {
-    userID: params.userID,
-    userName: params.userName,
+    userID: this.$sysparams.userID,
+    userName: this.$sysparams.userName,
     status: ""
   }
   seat = {
@@ -47,8 +52,11 @@ export default class HomePage extends Vue {
     endTime: "",
     leaveTime: null
   }
+  get hasSeatInfo() {
+    return this.seat.seatID > 0
+  }
   async beforeMount() {
-    if (!(params.token && params.token != "")) {
+    if (!(this.$sysparams.token && this.$sysparams.token != "")) {
       return;
     }
     // Fetch data.
@@ -67,7 +75,7 @@ export default class HomePage extends Vue {
     } catch (error) {
       // @ts-ignore
       this.$f7.toast.create({
-        test: "获取用户信息失败",
+        text: "获取用户信息失败",
         position: "top",
         cancelTimeout: 2000
       })
@@ -94,7 +102,7 @@ export default class HomePage extends Vue {
     } catch (error) {
       // @ts-ignore
       this.$f7.toast.create({
-        test: "获取用户信息失败",
+        text: "获取用户信息失败",
         position: "top",
         closeTimeout: 2000
       }).open();

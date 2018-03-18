@@ -1,6 +1,9 @@
 <template lang="pug">
-  f7-page
-    f7-navbar(title="预约座位")
+  div
+    f7-navbar
+      f7-nav-left
+      f7-nav-title 预约座位
+      f7-nav-right
     f7-block-title 选择场馆
     f7-list
       f7-list-item(v-for="building in buildings" :key="building.buildingID" :title="building.buildingName", radio, name="targetBuildingID", :value="building.buildingID", :checked="targetBuildingID == building.buildingID", @change="targetBuildingID = $event.target.value")
@@ -20,7 +23,6 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 import { LibraryBuilding, BuildingFilterData } from "../models/LibraryModel";
 import { RestResponse } from "../models/RestResponse";
-import params from '../plugin/vue-book-sys-webparams'
 import axios,{ AxiosResponse } from "axios";
 
 @Component({
@@ -29,18 +31,18 @@ import axios,{ AxiosResponse } from "axios";
   },
   watch: {
     buildings: function (newValue:Array<LibraryBuilding>) {
-      params.buildings = newValue;
+      this.$sysparams.buildings = newValue;
     },
     avalibleDates: function (newValue:Array<string>) {
-      params.avalibleDates = newValue;
+      this.$sysparams.avalibleDates = newValue;
     }
   }
 })
 export default class BookPage extends Vue {
   targetBuildingID: number = -1;
   targetDate: string = "";
-  buildings: Array<LibraryBuilding> = params.buildings;
-  avalibleDates: Array<string> = params.avalibleDates;
+  buildings: Array<LibraryBuilding> = this.$sysparams.buildings;
+  avalibleDates: Array<string> = this.$sysparams.avalibleDates;
   async fetchBuildings() {
     try {
       var buildings_rest: AxiosResponse<RestResponse<BuildingFilterData>> = await axios({
@@ -64,7 +66,7 @@ export default class BookPage extends Vue {
     }
   }
   async mounted() {
-    if (!(params.buildings && params.buildings.length > 0)) {
+    if (!(this.$sysparams.buildings && this.$sysparams.buildings.length > 0)) {
       await this.fetchBuildings();
     }
   }

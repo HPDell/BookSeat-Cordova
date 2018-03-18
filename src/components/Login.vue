@@ -28,8 +28,6 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import params from '../plugin/vue-book-sys-webparams';
-import Framework7 from 'framework7/dist/framework7.esm.bundle.js';
 import axios from 'axios';
 import { RestResponse } from '../models/RestResponse';
 import { LoginData } from "../models/LoginData";
@@ -38,7 +36,7 @@ import { LoginData } from "../models/LoginData";
 export default class Login extends Vue {
   userID: string = "";
   userPassword: string = "";
-  host: string = localStorage.host || params.host;
+  host: string = localStorage.host || this.$sysparams.host;
   vm: Vue;
   remember: boolean = true;
 
@@ -46,44 +44,47 @@ export default class Login extends Vue {
    * 登录
    */
   login(): void {
+    console.log(JSON.stringify(this.$sysparams))
+    if (!this.$sysparams) {
+      return;
+    }
     // 显示加载符
-    var app = new Framework7();
-    app.preloader.show();
+    this.$f7.preloader.show();
     axios({
       method: "GET",
-      url: `https://${params.host}:8443/rest/auth`,
+      url: `https://${this.host}:8443/rest/auth`,
       params: {
         username: this.userID,
         password: this.userPassword
       }
     }).then(response => {
-      app.preloader.hide();
+      this.$f7.preloader.hide();
       var body: RestResponse<LoginData> = response.data;
       console.log(body);
       if (body.status == "success") {
         // Save parameters.
-        params.token = body.data.token;
-        params.userID = this.userID;
-        params.userPassword = this.userPassword;
-        params.host = this.host;
-        params.token = body.data.token;
+        this.$sysparams.token = body.data.token;
+        this.$sysparams.userID = this.userID;
+        this.$sysparams.userPassword = this.userPassword;
+        this.$sysparams.host = this.host;
+        this.$sysparams.token = body.data.token;
         localStorage.setItem("host", this.host);
         // Set axios defaults.
-        axios.defaults.baseURL = `https://${params.host}:8443/`;
-        axios.defaults.headers.common['token'] = params.token;
+        axios.defaults.baseURL = `https://${this.$sysparams.host}:8443/`;
+        axios.defaults.headers.common['token'] = this.$sysparams.token;
         // @ts-ignore
         this.$f7router.navigate("/");
       } else {
-        app.toast.create({
+        this.$f7.toast.create({
           text: "登录失败：" + body.message,
           position: "top",
           closeTimeout: 2000
         }).open();
       }
     }).catch(reason => {
-      app.preloader.hide();
-      app.toast.create({
-        text: "无法连接到服务器",
+      this.$f7.preloader.hide();
+      this.$f7.toast.create({
+        text: "无法连接到服务器：" + reason,
         position: "top",
         closeTimeout: 2000
       }).open();
