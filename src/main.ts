@@ -23,11 +23,10 @@ import Routes from './routes'
 import App from './app.vue';
 
 // Import Global Params;
-import VueBookSysWebParams from './plugin/vue-book-sys-webparams.js'
-
+import {VueBookSysWebParams} from "./plugin/vue-book-sys-webparams";
 // Init F7 Vue Plugin
 Vue.use(Framework7Vue, Framework7)
-Vue.use(VueBookSysWebParams)
+Vue.use(new VueBookSysWebParams())
 
 new Vue({
   el: '#app',

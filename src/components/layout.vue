@@ -14,7 +14,6 @@
 import Vue from 'vue'
 import HomePage from './home.vue'
 import BookPage from './book.vue'
-import params from '../plugin/vue-book-sys-webparams'
 
 export default Vue.extend({
   name: "Layout",
@@ -28,7 +27,8 @@ export default Vue.extend({
     }
   },
   beforeMount() {
-    if (params.token || params.token == "") {
+    console.log("BeforeMounted")
+    if (this.$sysparams.token || this.$sysparams.token == "") {
       this.$f7router.navigate('/login/')
     }
   }
