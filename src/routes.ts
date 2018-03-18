@@ -1,13 +1,14 @@
 import Layout from './components/layout.vue';
 import HomePage from './components/home.vue';
-import BookPage from './components/book.vue'
-import LoginPage from './components/login.vue'
-import NotFoundPage from './pages/not-found.vue'
-import Home from './pages/home.vue'
+import BookPage from './components/book.vue';
+import LoginPage from './components/login.vue';
+import BookByAllPage from './components/bookpages/byall.vue';
+
+import NotFoundPage from './pages/not-found.vue';
+import Home from './pages/home.vue';
 import AboutPage from './pages/about.vue';
 import FormPage from './pages/form.vue';
 import DynamicRoutePage from './pages/dynamic-route.vue';
-
 import PanelLeftPage from './pages/panel-left.vue';
 import PanelRightPage from './pages/panel-right.vue';
 
@@ -24,7 +25,13 @@ export default [
       {
         path: '/book/',
         id: 'book',
-        component: BookPage
+        component: BookPage,
+        routes: [
+          {
+            path: '/:bookType/byall/:buildingID/:bookDate/',
+            component: BookByAllPage
+          }
+        ]
       }
     ]
   },

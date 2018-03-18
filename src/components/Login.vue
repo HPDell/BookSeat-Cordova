@@ -68,16 +68,19 @@ export default class Login extends Vue {
         this.$sysparams.userPassword = this.userPassword;
         this.$sysparams.host = this.host;
         this.$sysparams.token = body.data.token;
+        // Store datas.
         localStorage.setItem("host", this.host);
         // Set axios defaults.
         axios.defaults.baseURL = `https://${this.$sysparams.host}:8443/`;
         axios.defaults.headers.common['token'] = this.$sysparams.token;
         // @ts-ignore
-        this.$f7router.navigate("/");
+        this.$f7router.navigate("/", {
+          history: false
+        });
       } else {
         this.$f7.toast.create({
           text: "登录失败：" + body.message,
-          position: "top",
+          position: "center",
           closeTimeout: 2000
         }).open();
       }
@@ -85,7 +88,7 @@ export default class Login extends Vue {
       this.$f7.preloader.hide();
       this.$f7.toast.create({
         text: "无法连接到服务器：" + reason,
-        position: "top",
+        position: "center",
         closeTimeout: 2000
       }).open();
     })

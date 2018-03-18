@@ -23,7 +23,7 @@
     template(v-if="hasSeatInfo")
       f7-block-title 操作
       f7-list
-        f7-list-button(title="释放")
+        f7-list-button(title="释放", @click="releaseSeat()")
         f7-list-button(title="改签")
 </template>
 
@@ -50,7 +50,9 @@ export default class HomePage extends Vue {
     seatNumber: 0,
     startTime: "",
     endTime: "",
-    leaveTime: null
+    leaveTime: null,
+    status: "",
+    reservationID: 0
   }
   get hasSeatInfo() {
     return this.seat.seatID > 0
@@ -76,7 +78,7 @@ export default class HomePage extends Vue {
       // @ts-ignore
       this.$f7.toast.create({
         text: "获取用户信息失败",
-        position: "top",
+        position: "center",
         cancelTimeout: 2000
       })
     }
@@ -86,7 +88,7 @@ export default class HomePage extends Vue {
         method: "GET"
       });
       var reservation_rest: RestResponse<Array<UserReservationData>> = reservation_response.data;
-      if (reservation_rest.status == "success") {
+      if (reservation_rest.status == "success" && reservation_rest.data && reservation_rest.data.length > 0) {
         var reservation = new UserReservation(reservation_rest.data.pop());
         this.seat.building = reservation.building;
         this.seat.floor = reservation.floor + "层";
@@ -96,17 +98,40 @@ export default class HomePage extends Vue {
         this.seat.startTime = reservation.begin;
         this.seat.endTime = reservation.end;
         this.seat.leaveTime = reservation.awayBegin;
-      } else {
+        this.seat.status = reservation.status;
+        this.seat.reservationID = reservation.id;
+      } else if (reservation_rest.status != "success") {
         throw "服务器返回错误"
       }
     } catch (error) {
       // @ts-ignore
       this.$f7.toast.create({
         text: "获取用户信息失败",
-        position: "top",
+        position: "center",
         closeTimeout: 2000
       }).open();
     }
+  }
+  async releaseSeat() {
+    axios({
+      url: "/rest/v2/cancel/" + this.seat.reservationID + '/',
+      method: "GET"
+    }).then(response => {
+      var success = this.$f7.toast.create({
+        text: "已取消预约",
+        position: "center"
+      }).open();
+      setTimeout(() => {
+        success.close();
+        // this.$f7router.refreshPage();
+      }, 2000);
+    }).catch(reason => {
+      this.$f7.toast.create({
+        text: "取消预约失败" + reason,
+        position: "center" ,
+        closeTimeout: 2000
+      }).open();
+    })
   }
 }
 </script>

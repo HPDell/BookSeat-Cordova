@@ -12,9 +12,9 @@
       f7-list-item(v-for="(bookDate, index) in avalibleDates" :key="index" :title="bookDate", radio, name="bookDate", :value="bookDate", :checked="targetDate == bookDate" @change="targetDate = $event.target.value")
     f7-block-title 查询方式
     f7-list
-        f7-list-item(title="全部", :link="'/book/' + bookType +'/byall/'")
-        f7-list-item(title="按时段查询", :link="'/book/' + bookType +'/bytime/'")
-        f7-list-item(title="按房间查询", :link="'/book/' + bookType +'/byroom/'")
+        //- f7-list-item(title="全部", :link="getBookUrl('byall')")
+        f7-list-item(title="按时段查询", :link="getBookUrl('bytime')")
+        f7-list-item(title="按房间查询", :link="getBookUrl('byroom')")
 </template>
 
 
@@ -25,10 +25,7 @@ import { LibraryBuilding, BuildingFilterData } from "../models/LibraryModel";
 import { RestResponse } from "../models/RestResponse";
 import axios,{ AxiosResponse } from "axios";
 
-@Component({
-  props: {
-    bookType: String
-  },
+@Component<BookPage>({
   watch: {
     buildings: function (newValue:Array<LibraryBuilding>) {
       this.$sysparams.buildings = newValue;
@@ -43,6 +40,21 @@ export default class BookPage extends Vue {
   targetDate: string = "";
   buildings: Array<LibraryBuilding> = this.$sysparams.buildings;
   avalibleDates: Array<string> = this.$sysparams.avalibleDates;
+  // @ts-ignore
+  bookType: string = this.$f7router.currentRoute.query.bookType;
+  /**
+   * 获取预定页面链接
+   * @param type 预定方式（预定或改签）
+   * @param method 选择方法
+   */
+  getBookUrl(method) {
+    // @ts-ignore
+    return ['/book', this.bookType, method, this.targetBuildingID, this.targetDate, ""].join("/");
+  }
+
+  /**
+   * 获取场馆
+   */
   async fetchBuildings() {
     try {
       var buildings_rest: AxiosResponse<RestResponse<BuildingFilterData>> = await axios({
@@ -60,7 +72,7 @@ export default class BookPage extends Vue {
       // @ts-ignore
       this.$f7.toast.create({
         text: "获取场馆数据失败：" + error,
-        position: "top" ,
+        position: "center" ,
         closeTimeout: 2000
       }).open();
     }
@@ -70,7 +82,5 @@ export default class BookPage extends Vue {
       await this.fetchBuildings();
     }
   }
-
-
 }
 </script>
