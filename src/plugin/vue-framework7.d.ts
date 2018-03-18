@@ -9,6 +9,15 @@ declare module 'vue/types/vue' {
   interface Vue {
     $f7: any;
     $f7router: any;
-    $sysparams: VueBookSysWebParams
+    $f7route: {
+      url: string;
+      path: string;
+      query: object;
+      params: object;
+      name: string;
+      hash: string;
+      route: object;
+    }
+    $sysparams: VueBookSysWebParams;
   }
 }
