@@ -12,12 +12,13 @@ declare module 'vue/types/vue' {
     $f7route: {
       url: string;
       path: string;
-      query: object;
-      params: object;
+      query: any;
+      params: any;
       name: string;
       hash: string;
-      route: object;
+      route: any;
     }
     $sysparams: VueBookSysWebParams;
+    $delay: (timeout: number) => Promise<void>
   }
 }

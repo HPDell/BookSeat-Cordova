@@ -1,9 +1,5 @@
 <template lang="pug">
   div
-    f7-navbar
-      f7-nav-left
-      f7-nav-title 预约座位
-      f7-nav-right
     f7-block-title 选择场馆
     f7-list
       f7-list-item(v-for="building in buildings" :key="building.buildingID" :title="building.buildingName", radio, name="targetBuildingID", :value="building.buildingID", :checked="targetBuildingID == building.buildingID", @change="targetBuildingID = $event.target.value")
@@ -12,7 +8,7 @@
       f7-list-item(v-for="(bookDate, index) in avalibleDates" :key="index" :title="bookDate", radio, name="bookDate", :value="bookDate", :checked="targetDate == bookDate" @change="targetDate = $event.target.value")
     f7-block-title 查询方式
     f7-list
-        //- f7-list-item(title="全部", :link="getBookUrl('byall')")
+        f7-list-item(title="全部", :link="getBookUrl('byall')")
         f7-list-item(title="按时段查询", :link="getBookUrl('bytime')")
         f7-list-item(title="按房间查询", :link="getBookUrl('byroom')")
 </template>
@@ -78,6 +74,7 @@ export default class BookPage extends Vue {
     }
   }
   async mounted() {
+    console.log("[book] bookType: ", this.bookType)
     if (!(this.$sysparams.buildings && this.$sysparams.buildings.length > 0)) {
       await this.fetchBuildings();
     }

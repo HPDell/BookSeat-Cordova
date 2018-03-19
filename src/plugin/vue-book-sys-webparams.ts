@@ -27,6 +27,13 @@ export class VueBookSysWebParams {
   install(Vue, options) {
     // @ts-ignore
     Vue.prototype.$sysparams = new VueBookSysWebParams();
+    Vue.prototype.$delay = function (timeout:number) {
+      return new Promise((resolve => {
+        setTimeout(() => {
+          resolve();
+        }, timeout);
+      }))
+    }
   }
   setOption(options) {
     if (options) {

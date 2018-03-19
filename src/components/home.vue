@@ -1,9 +1,5 @@
 <template lang="pug">
   div
-    f7-navbar
-      f7-nav-left
-      f7-nav-title 我的信息
-      f7-nav-right
     f7-block-title 基本信息
     f7-list
       f7-list-item(title="学号", :after="user.userID")
@@ -24,7 +20,7 @@
       f7-block-title 操作
       f7-list
         f7-list-button(title="释放", @click="releaseSeat()")
-        f7-list-button(title="改签")
+        f7-list-button(title="改签", :href="changeTimeHref")
 </template>
 
 <script lang="ts">
@@ -52,10 +48,14 @@ export default class HomePage extends Vue {
     endTime: "",
     leaveTime: null,
     status: "",
-    reservationID: 0
+    reservationID: 0,
+    date: ""
   }
   get hasSeatInfo() {
     return this.seat.seatID > 0
+  }
+  get changeTimeHref() {
+    return `/selectTime/chageTime/${this.seat.date}/${this.seat.seatID}/`;
   }
   async beforeMount() {
     if (!(this.$sysparams.token && this.$sysparams.token != "")) {
@@ -100,6 +100,7 @@ export default class HomePage extends Vue {
         this.seat.leaveTime = reservation.awayBegin;
         this.seat.status = reservation.status;
         this.seat.reservationID = reservation.id;
+        this.seat.date = reservation.onDate;
       } else if (reservation_rest.status != "success") {
         throw "服务器返回错误"
       }
@@ -113,8 +114,9 @@ export default class HomePage extends Vue {
     }
   }
   async releaseSeat() {
+    var url = this.seat.status === "CHECK_IN" ? "/rest/v2/stop/" : `/rest/v2/cancel/${this.seat.reservationID}/`
     axios({
-      url: "/rest/v2/cancel/" + this.seat.reservationID + '/',
+      url: url,
       method: "GET"
     }).then(response => {
       var success = this.$f7.toast.create({

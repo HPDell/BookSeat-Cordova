@@ -68,10 +68,7 @@ export default class Login extends Vue {
         this.$sysparams.userPassword = this.userPassword;
         this.$sysparams.host = this.host;
         this.$sysparams.token = body.data.token;
-<<<<<<< HEAD
-=======
         // Store datas.
->>>>>>> 36c87a55497a10b13e85a44c9a5e053e7cc461ca
         localStorage.setItem("host", this.host);
         // Set axios defaults.
         axios.defaults.baseURL = `https://${this.$sysparams.host}:8443/`;

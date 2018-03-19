@@ -2,7 +2,7 @@ import Layout from './components/layout.vue';
 import HomePage from './components/home.vue';
 import BookPage from './components/book.vue';
 import LoginPage from './components/login.vue';
-import BookByAllPage from './components/bookpages/byall.vue';
+import BookByAllPage from './components/bookpages/bookbyall.vue';
 
 import NotFoundPage from './pages/not-found.vue';
 import Home from './pages/home.vue';
@@ -25,19 +25,23 @@ export default [
       {
         path: '/book/',
         id: 'book',
-        component: BookPage,
-        routes: [
-          {
-            path: '/:bookType/byall/:buildingID/:bookDate/',
-            component: BookByAllPage
-          }
-        ]
+        component: BookPage
       }
-    ]
+    ],
+    on: {
+      pageBeforeIn: function (event, page) {
+        console.log("Before In Main Layout.")
+      }
+    }
   },
   {
     path: '/login/',
     component: LoginPage,
+    on: {
+      pageBeforeIn: function (event, page) {
+        console.log("Before In Login.")
+      }
+    }
   },
   {
     path: '/homepage/',
@@ -62,6 +66,10 @@ export default [
   {
     path: '/dynamic-route/blog/:blogId/post/:postId/',
     component: DynamicRoutePage,
+  },
+  {
+    path: '/book/:bookType/byall/:buildingID/:bookDate/',
+    component: BookByAllPage
   },
   {
     path: '(.*)',
