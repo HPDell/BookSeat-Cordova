@@ -107,17 +107,17 @@ export default class BookByAll extends Vue {
    * 挂载之前的生命周期钩子
    */
   async mounted() {
-    // Show preloader with toast;
-    var preloaderToast = this.$f7.toast.create({
-      icon: '<div class="preloader" />',
-      text: "正在加载数据",
-      position: 'center'
-    })
-    preloaderToast.open();
     // Fetch data.
     var buildingID = this.buildingID;
     var bookDate = this.bookDate;
     if (!(this.building.buildingRooms && this.building.buildingRooms.length > 0)) {
+      // Show preloader with toast;
+      var preloaderToast = this.$f7.toast.create({
+        icon: '<div class="preloader" />',
+        text: "正在加载数据",
+        position: 'center'
+      })
+      preloaderToast.open();
       // 请求服务器获取数据
       try {
         await this.building.fetchRooms();
