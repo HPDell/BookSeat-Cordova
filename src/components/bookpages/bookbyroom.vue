@@ -4,10 +4,15 @@
       f7-nav-left(back-link="返回", back-link-url="/book/")
       f7-nav-title 全部座位
       f7-nav-right
-    f7-block(v-for="room in building.buildingRooms" :key="room.roomId", strong)
-      f7-block-header {{ room.room }}
-      f7-row(no-gap)
-        f7-col.text-align-center(width="20", v-for="seat in avalibleSeats(room)" :key="seat.id")
+    f7-list(from)
+      f7-list-item(smart-select, title="房间", :smart-select-params="{data-open-in: 'sheet'")
+        select(name="selectRoom" v-model="targetRoomID")
+          option(v-for="room in roomList" :value="room.roomId") {{ room.room }}
+    f7-block-title 座位列表
+    f7-block(strong)
+      f7-block-header {{ selectedRoom.room }}
+      f7-row
+        f7-col(v-for="seat in selectedRoom.roomSeats", :key="seat.id", width="20")
           f7-link(icon-only, icon-f7="home_fill", class="color-green")
           p.no-margin {{ seat.name }}
 </template>
@@ -23,6 +28,7 @@ import { LayoutByDateData } from "../../models/LayoutByDateData";
 @Component
 export default class BookByAll extends Vue {
   buildingID: string | number = this.$f7route.params.buildingID;
+  targetRoomID: number = 0;
   bookDate: string = this.$f7route.params.bookDate;
 
   /**
@@ -33,6 +39,16 @@ export default class BookByAll extends Vue {
     return this.$sysparams.buildings.find(value => {
       return value.buildingID == buildingID;
     })
+  }
+
+  /**
+   * 获取房间列表
+   */
+  get selectedRoom() {
+    var targetRoomID = this.targetRoomID;
+    return this.building.buildingRooms.find(value => {
+      return value.roomId == targetRoomID
+    });
   }
 
   /**

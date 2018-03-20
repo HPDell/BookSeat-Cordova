@@ -1,3 +1,7 @@
+import { RestResponse } from "./RestResponse";
+import axios, {AxiosResponse} from "axios"
+import { LayoutByDateData } from "./LayoutByDateData";
+
 export interface BuildingFilterData {
   buildings: (number | string)[][];
   rooms: (number | string)[][];
@@ -16,6 +20,30 @@ export class LibraryBuilding {
     this.buildingID = parameters[0];
     this.buildingName = parameters[1];
     this.buildingRooms = new Array<LibraryRoom>();
+  }
+  /**
+   * 获取房间数据
+   */
+  async fetchRooms() {
+    try {
+      var room_rest: AxiosResponse<RestResponse<Array<LibraryRoomData>>> = await axios({
+        url: `/rest/v2/room/stats2/${this.buildingID}/`,
+        method: "GET"
+      })
+      if (room_rest.status === 200 && room_rest.data.status == "success") {
+        if (room_rest.data.data && room_rest.data.data.length > 0) {
+          this.buildingRooms = room_rest.data.data.map(value => {
+            return new LibraryRoom(value);
+          });
+        } else {
+          throw "服务器已响应，但无返回值";
+        }
+      } else {
+        throw "服务器返回错误";
+      }
+    } catch (error) {
+      throw error;
+    }
   }
 }
 
@@ -53,6 +81,38 @@ export class LibraryRoom implements LibraryRoomData {
       }
     }
     this.roomSeats = new Array<LibrarySeat>();
+  }
+  /**
+   * 获取座位
+   * @param bookDate 日期
+   */
+  async fetchSeats(bookDate: string) {
+    try {
+      var seat_rest: AxiosResponse<RestResponse<LayoutByDateData>> = await axios({
+        url: `/rest/v2/room/layoutByDate/${this.roomId}/${bookDate}/`,
+        method: "GET"
+      })
+      if (seat_rest.status === 200 && seat_rest.data.status === "success") {
+        if (seat_rest.data.data) {
+          var layout = seat_rest.data.data.layout;
+          var seats = new Array<LibrarySeat>();
+          for (const key in layout) {
+            if (layout.hasOwnProperty(key)) {
+              const element = layout[key];
+              if (key == "1") { console.log("Layout element: ", JSON.stringify(element)); }
+              if (element.type == "seat") {
+                seats.push(new LibrarySeat(element));
+              }
+            }
+          }
+          this.roomSeats = seats;
+        } else {
+          throw "服务器已成功响应，但没有返回数据"
+        }
+      }
+    } catch (error) {
+      throw "服务器无响应"
+    }
   }
 }
 

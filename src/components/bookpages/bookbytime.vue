@@ -4,10 +4,19 @@
       f7-nav-left(back-link="返回", back-link-url="/book/")
       f7-nav-title 全部座位
       f7-nav-right
-    f7-block(v-for="room in building.buildingRooms" :key="room.roomId", strong)
+    f7-list(from)
+      f7-list-item(smart-select, title="开始时间", :smart-select-params="{data-open-in: 'sheet'")
+        select(name="startTime" v-model="startTime")
+          option(v-for="start in startTimeList" :value="start.id" :key="start.id") {{ start.value }}
+      f7-list-item(smart-select, title="结束时间", :smart-select-params="{data-open-in: 'sheet'")
+        select(name="endTime" v-model="endTime")
+          option(v-for="end in endTimeList" :value="end.id" :key="end.id") {{ end.value }}
+      f7-list-button(title="查询")
+    f7-block-title 座位列表
+    f7-block(strong, v-for="room in selectedRoomsSeats", :key="room.roomId")
       f7-block-header {{ room.room }}
-      f7-row(no-gap)
-        f7-col.text-align-center(width="20", v-for="seat in avalibleSeats(room)" :key="seat.id")
+      f7-row
+        f7-col(v-for="seat in roomAvalibleList(room)", :key="seat.id", width="20")
           f7-link(icon-only, icon-f7="home_fill", class="color-green")
           p.no-margin {{ seat.name }}
 </template>
@@ -15,15 +24,19 @@
 <script lang="ts">
 import Vue from 'vue'
 import Component from 'vue-class-component'
-import { LibrarySeat, LibraryBuilding, LibraryRoom, LibraryRoomData } from '../../models/LibraryModel';
+import { LibrarySeat, LibraryBuilding, LibraryRoom, LibraryRoomData, LibrarySeatTime } from '../../models/LibraryModel';
 import axios,{ AxiosResponse, AxiosProxyConfig, AxiosPromise } from 'axios'
 import { RestResponse } from '../../models/RestResponse';
 import { LayoutByDateData } from "../../models/LayoutByDateData";
+import moment from 'moment';
 
 @Component
 export default class BookByAll extends Vue {
   buildingID: string | number = this.$f7route.params.buildingID;
+  targetStartTime: string = "";
+  targetEndTime: string = "";
   bookDate: string = this.$f7route.params.bookDate;
+  selectedRoomsSeats: Array<LibraryRoom> = [];
 
   /**
    * 获取场馆对象
@@ -33,6 +46,52 @@ export default class BookByAll extends Vue {
     return this.$sysparams.buildings.find(value => {
       return value.buildingID == buildingID;
     })
+  }
+
+  /**
+   * 获取房间列表
+   */
+  get roomList() {
+    return this.building.buildingRooms;
+  }
+
+  roomAvalibleList(room: LibraryRoom) {
+    var startTime = this.targetStartTime;
+    var endTime = this.endTimeList;
+    var fullfillStartTime = room.roomSeats.filter((value, index) => {
+      return value.startTimes.map(time => {
+        return time.id
+      }).findIndex(time => {
+        return time === startTime;
+      }) > -1;
+    })
+  }
+
+  /**
+   * 开始时间列表
+   */
+  get startTimeList() {
+    var startTimes: Array<LibrarySeatTime> = [];
+    var hour = moment().hour();
+    for (let i = hour < 22 ? hour : 8; i < 22 ; i++) {
+      for (let j = 0; j < 60; j += 30) {
+        startTimes.push(new LibrarySeatTime({
+          hour: i,
+          minute: j
+        }))
+      }
+    }
+    return startTimes;
+  }
+
+  /**
+   * 结束时间列表
+   */
+  get endTimeList() {
+    return this.startTimeList.slice(1).concat([new LibrarySeatTime({
+      hour: 22,
+      minute: 0
+    })]);
   }
 
   /**
@@ -90,4 +149,3 @@ export default class BookByAll extends Vue {
   }
 }
 </script>
-
