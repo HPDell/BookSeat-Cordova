@@ -5,19 +5,19 @@
       f7-nav-title 全部座位
       f7-nav-right
     f7-list(from)
-      f7-list-item(smart-select, title="开始时间", :smart-select-params="{data-open-in: 'sheet'")
-        select(name="startTime" v-model="startTime")
+      f7-list-item(smart-select, title="开始时间", :smart-select-params="{'openIn': 'sheet'}")
+        select(name="startTime" v-model="targetStartTime")
           option(v-for="start in startTimeList" :value="start.id" :key="start.id") {{ start.value }}
-      f7-list-item(smart-select, title="结束时间", :smart-select-params="{data-open-in: 'sheet'")
-        select(name="endTime" v-model="endTime")
+      f7-list-item(smart-select, title="结束时间", :smart-select-params="{'openIn': 'sheet'}")
+        select(name="endTime" v-model="targetEndTime")
           option(v-for="end in endTimeList" :value="end.id" :key="end.id") {{ end.value }}
-      f7-list-button(title="查询")
+      f7-list-button(title="查询", @click="searchSeats")
     f7-block-title 座位列表
     f7-block(strong, v-for="room in selectedRoomsSeats", :key="room.roomId")
       f7-block-header {{ room.room }}
       f7-row
-        f7-col(v-for="seat in roomAvalibleList(room)", :key="seat.id", width="20")
-          f7-link(icon-only, icon-f7="home_fill", class="color-green")
+        f7-col(v-for="seat in room.roomSeats", :key="seat.id", width="20")
+          f7-link(icon-only, icon-f7="home_fill", class="color-green", :href="getBookHref(room, seat)")
           p.no-margin {{ seat.name }}
 </template>
 
@@ -28,15 +28,21 @@ import { LibrarySeat, LibraryBuilding, LibraryRoom, LibraryRoomData, LibrarySeat
 import axios,{ AxiosResponse, AxiosProxyConfig, AxiosPromise } from 'axios'
 import { RestResponse } from '../../models/RestResponse';
 import { LayoutByDateData } from "../../models/LayoutByDateData";
-import moment from 'moment';
+import * as moment from 'moment';
 
 @Component
 export default class BookByAll extends Vue {
-  buildingID: string | number = this.$f7route.params.buildingID;
+  params: {
+    bookType: string,
+    buildingID: string,
+    bookDate: string
+  } = this.$f7route.params;
+  query = this.$f7route.query;
   targetStartTime: string = "";
   targetEndTime: string = "";
-  bookDate: string = this.$f7route.params.bookDate;
   selectedRoomsSeats: Array<LibraryRoom> = [];
+  bookDate: string = "";
+  buildingID: string | number = "";
 
   /**
    * 获取场馆对象
@@ -45,25 +51,6 @@ export default class BookByAll extends Vue {
     var buildingID = this.buildingID;
     return this.$sysparams.buildings.find(value => {
       return value.buildingID == buildingID;
-    })
-  }
-
-  /**
-   * 获取房间列表
-   */
-  get roomList() {
-    return this.building.buildingRooms;
-  }
-
-  roomAvalibleList(room: LibraryRoom) {
-    var startTime = this.targetStartTime;
-    var endTime = this.endTimeList;
-    var fullfillStartTime = room.roomSeats.filter((value, index) => {
-      return value.startTimes.map(time => {
-        return time.id
-      }).findIndex(time => {
-        return time === startTime;
-      }) > -1;
     })
   }
 
@@ -95,11 +82,36 @@ export default class BookByAll extends Vue {
   }
 
   /**
+   * 获取预约链接
+   * @param room 房间
+   * @param seat 座位
+   */
+  getBookHref(room: LibraryRoom, seat: LibrarySeat) {
+    var url = `/selecttime/${this.params.bookType}/${this.bookDate}/${seat.id}/?`
+    switch (this.params.bookType) {
+      case "change":
+        url += `reserveID=${this.query.reserveID}&`
+      case "new":
+        url += `buildingID=${this.params.buildingID}&roomID=${room.roomId}&`
+        break;
+      default:
+        break;
+    }
+    return url.substring(0, url.length - 2);
+  }
+
+  /**
    * 可选座位
    */
   avalibleSeats(room: LibraryRoom) {
-    return room.roomSeats.filter(value => {
-      return value.status === "FREE"
+    var startTime = this.targetStartTime;
+    var endTime = this.targetEndTime;
+    return room.roomSeats.filter(seat => {
+      return seat.status === "FREE" && (seat.startTimes.findIndex(time => {
+        return time.id == startTime
+      }) > -1) && (seat.endTimes.findIndex(time => {
+        return time.id == endTime
+      }) > -1);
     })
   }
 
@@ -112,12 +124,7 @@ export default class BookByAll extends Vue {
     var bookDate = this.bookDate;
     if (!(this.building.buildingRooms && this.building.buildingRooms.length > 0)) {
       // Show preloader with toast;
-      var preloaderToast = this.$f7.toast.create({
-        icon: '<div class="preloader" />',
-        text: "正在加载数据",
-        position: 'center'
-      })
-      preloaderToast.open();
+      this.$f7.dialog.preloader("正在加载数据")
       // 请求服务器获取数据
       try {
         await this.building.fetchRooms();
@@ -137,8 +144,9 @@ export default class BookByAll extends Vue {
             await this.$delay(500);
           }
         }
-        preloaderToast.close();
+        this.$f7.dialog.close();
       } catch (error) {
+        this.$f7.dialog.close();
         this.$f7.toast.create({
           text: "获取房间信息失败：" + error,
           position: "top",
@@ -146,6 +154,55 @@ export default class BookByAll extends Vue {
         })
       }
     }
+  }
+
+  /***
+   * 搜索座位
+   */
+  async searchSeats() {
+    var building = this.building;
+    var bookDate = this.bookDate;
+    var targetStartTime = this.targetStartTime;
+    console.log(targetStartTime);
+    this.$f7.dialog.preloader("正在加载数据");
+    for (const room of building.buildingRooms) {
+      if (!(room.roomSeats && room.roomSeats.length > 0)) {
+        try {
+          await room.fetchSeats(bookDate);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      for (const seat of room.roomSeats) {
+        if (!(seat.startTimes && seat.startTimes.length > 0)) {
+          try {
+            await seat.fetchStartTime(bookDate);
+          } catch (error) {
+            console.log(error)
+          }
+        }
+        try {
+          // @ts-ignore
+          seat.createEndTime(bookDate, {
+            id: targetStartTime
+          });
+        } catch (error) {
+          console.log(error)
+        }
+      }
+    }
+    var vm = this;
+    this.selectedRoomsSeats = building.buildingRooms.map(value => {
+      var newValue = new LibraryRoom(value);
+      newValue.roomSeats = vm.avalibleSeats(value);
+      return newValue;
+    })
+    this.$f7.dialog.close();
+  }
+
+  created() {
+    this.bookDate = this.params.bookDate;
+    this.buildingID = this.params.buildingID;
   }
 }
 </script>

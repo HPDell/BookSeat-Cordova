@@ -14,7 +14,7 @@
       f7-list-item(title="座位号", :after="seat.seatNumber")
       f7-list-item(title="开始时间", :after="seat.startTime")
       f7-list-item(title="结束时间", :after="seat.endTime")
-      f7-list-item(title="离馆时间", :after="seat.leaveTime" v-if="seat.leaveTime")
+      f7-list-item(title="离馆时间", :after="seat.leaveTime" v-if="seat.status == 'AWAY'")
     f7-block(v-else) 无
     template(v-if="hasSeatInfo")
       f7-block-title 操作
@@ -114,7 +114,7 @@ export default class HomePage extends Vue {
     }
   }
   async releaseSeat() {
-    var url = this.seat.status === "CHECK_IN" ? "/rest/v2/stop/" : `/rest/v2/cancel/${this.seat.reservationID}/`
+    var url = this.seat.status !== "ABSERVED" ? "/rest/v2/stop/" : `/rest/v2/cancel/${this.seat.reservationID}/`
     axios({
       url: url,
       method: "GET"

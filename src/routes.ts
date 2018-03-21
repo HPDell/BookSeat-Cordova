@@ -3,6 +3,9 @@ import HomePage from './components/home.vue';
 import BookPage from './components/book.vue';
 import LoginPage from './components/login.vue';
 import BookByAllPage from './components/bookpages/bookbyall.vue';
+import BookByTimePage from './components/bookpages/bookbytime.vue';
+import BookByRoomPage from './components/bookpages/bookbyroom.vue';
+import SelectTime from './components/bookpages/selecttime.vue';
 
 import NotFoundPage from './pages/not-found.vue';
 import Home from './pages/home.vue';
@@ -70,6 +73,18 @@ export default [
   {
     path: '/book/:bookType/byall/:buildingID/:bookDate/',
     component: BookByAllPage
+  },
+  {
+    path: '/book/:bookType/bytime/:buildingID/:bookDate/',
+    component: BookByTimePage
+  },
+  {
+    path: '/book/:bookType/byroom/:buildingID/:bookDate/',
+    component: BookByRoomPage
+  },
+  {
+    path: '/selecttime/:bookType/:bookDate/:seatID/',
+    component: SelectTime
   },
   {
     path: '(.*)',
