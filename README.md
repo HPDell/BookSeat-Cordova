@@ -1,73 +1,66 @@
-# Framework7 Vue + Webpack App Template
+> 免责声明：本项目只做交流和学习使用，使用本软件引发的任何后果本人不承担任何责任。
 
-A full-featured Framework7 Vue with Webpack setup with hot-reload & css extraction. Based on [Vue Webpack Boilerplate](https://github.com/vuejs-templates/webpack)
+# 编译方法
 
-## Usage
+首先安装工具yarn。
 
-### 1. Download this repository
-```
-git clone https://github.com/framework7io/framework7-template-vue-webpack my-app
-```
-
-Repository will be downloaded into `my-app/` folder
-
-### 2. Instal dependencies
-
-Go to the downloaded repository folder and run:
-```
-npm install
-```
-
-This will download latest version of Framework7, Framework7-Vue, Vue and required icon fonts (to `/src/fonts/`)
-
-### 3. Run the app
-
-```
-npm run dev
-```
-
-App will be opened in browser at `http://localhost:8080/`
-
-### 4. Build app for production
-
-```
-npm run build
-```
-
-The output will be at `www/` folder
-
-## Use with cordova
-
-Just put the contents of `www` folder in your cordova's project root `www` folder
-
-## One command install
-
-```
-git clone https://github.com/framework7io/framework7-template-vue-webpack my-app &&
-cd my-app &&
-npm install &&
-npm run dev
-```
-
-## Build Setup
+然后安装依赖：
 
 ``` bash
-# install dependencies
-npm install
-
-# serve with hot reload at localhost:8080
-npm run dev
-
-# build for production with minification
-npm run build
+yarn install
 ```
 
-## Project Structure
+运行下面命令编译
 
-* `src/assets` - folder with static assets (images)
-* `src/components` - folder with custom `.vue` components
-* `src/css` - put custom app CSS styles here. Don't forget to import them in `main.js`
-* `src/pages` - app `.vue` pages
-* `src/main.js` - main app file where you include/import all required libs and init app
-* `src/routes.js` - app routes
-* `src/app.vue` - main app structure/component
+``` bash
+yarn run build
+```
+
+编译的文件会放在与项目根目录同级的 `www` 目录中，请提前建立 Cordova 或 PhoneGap 工程。
+
+# 部署方法
+
+全局安装 Cordova 或 PhoneGap：
+
+``` bash
+yarn globle add phonegap
+```
+
+建立 PhoneGap 工程：
+
+``` bash
+phonegap create BookSeat-Cordova
+```
+
+然后删掉建立的工程中的 `www` 目录下的内容。
+在工程目录中新建 `app` 文件夹，放入本仓库。
+执行编译过程后，`www` 目录会自动出现编译后的文件。
+
+运行下列命令添加平台：
+
+``` bash
+phonegap platform add ios # 添加 ios
+phonegap platform add android # 添加 Android
+```
+
+运行命令检查构建先决条件是否满足：
+
+``` bash
+cordova requirements
+```
+
+一般安装了 Gradle 和 Android Studio 就可以编译安卓端程序。
+iOS 的编译需要在 Mac 下，安装 Xcode，再安装 CocoaPods 。
+详见[知乐文章][zhile-page]。
+
+然后运行命令生成工程
+
+``` bash
+phonegap build ios # 如果要生成 ios 工程。
+phonegap build android # 如果要生成 Android 工程。
+```
+
+如果不能自动编译成手机可用的软件，那么打开 Xcode 工程
+或 Android Studio 工程，在 IDE 中编译即可。
+
+[zhile-page]:https://www.zhile.name/115.html
