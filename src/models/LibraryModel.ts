@@ -257,7 +257,7 @@ export class LibrarySeatTime implements LibrarySeatTimeData {
     } else if (parameters.hour && parameters.minute > -1) {
       this.hour = parameters.hour;
       this.minute = parameters.minute;
-      this.value = `${this.hour}:${this.minute}`;
+      this.value = `${this.hour}:${this.minute < 10 ? "0" + this.minute : this.minute}`;
       this.id = (this.hour * 60 + this.minute).toString();
     } else {
       this.id = parameters.id;

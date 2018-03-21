@@ -1,7 +1,7 @@
 <template>
   <f7-page id="login-page">
     <f7-login-screen-title>自习助手的助手</f7-login-screen-title>
-    <f7-list form inset inline-labels>
+    <f7-list form inset inline-labels form-store-data>
       <f7-list-item>
         <f7-label>ID</f7-label>
         <f7-input type="text" placeholder="请输入ID号" :value="userID" @input="userID = $event.target.value"></f7-input>

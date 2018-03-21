@@ -5,7 +5,8 @@ import LoginPage from './components/login.vue';
 import BookByAllPage from './components/bookpages/bookbyall.vue';
 import BookByTimePage from './components/bookpages/bookbytime.vue';
 import BookByRoomPage from './components/bookpages/bookbyroom.vue';
-import SelectTime from './components/bookpages/selecttime.vue';
+import SelectTimePage from './components/bookpages/selecttime.vue';
+import AutoPage from './components/auto.vue'
 
 import NotFoundPage from './pages/not-found.vue';
 import Home from './pages/home.vue';
@@ -29,6 +30,11 @@ export default [
         path: '/book/',
         id: 'book',
         component: BookPage
+      },
+      {
+        path: "/auto/",
+        id: "auto",
+        component: AutoPage
       }
     ],
     on: {
@@ -84,7 +90,7 @@ export default [
   },
   {
     path: '/selecttime/:bookType/:bookDate/:seatID/',
-    component: SelectTime
+    component: SelectTimePage
   },
   {
     path: '(.*)',

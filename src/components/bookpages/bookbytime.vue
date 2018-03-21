@@ -174,20 +174,27 @@ export default class BookByAll extends Vue {
         }
       }
       for (const seat of room.roomSeats) {
-        if (!(seat.startTimes && seat.startTimes.length > 0)) {
-          try {
-            await seat.fetchStartTime(bookDate);
-          } catch (error) {
-            console.log(error)
+        if (seat.status == "FREE") {
+          if (!(seat.startTimes && seat.startTimes.length > 0)) {
+            try {
+              await seat.fetchStartTime(bookDate);
+            } catch (error) {
+              console.log(error)
+            }
           }
-        }
-        try {
-          // @ts-ignore
-          seat.createEndTime(bookDate, {
-            id: targetStartTime
-          });
-        } catch (error) {
-          console.log(error)
+          var startTimeIndex = seat.startTimes.findIndex(value => {
+            return value.id == targetStartTime;
+          })
+          if (startTimeIndex > -1) {
+            try {
+              seat.fetchEndTime(bookDate, {
+                id: targetStartTime
+              });
+            } catch (error) {
+              console.log(error)
+            }
+          }
+          this.$delay(500);
         }
       }
     }
