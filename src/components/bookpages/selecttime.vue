@@ -70,38 +70,70 @@ export default class SelectTime extends Vue {
     this.targetSeat = seat;
   }
 
+  /**
+   * 释放座位
+   */
+  async releaseSeat() {
+    var url = this.query.status !== "ABSERVED" ? "/rest/v2/stop/" : `/rest/v2/cancel/${this.query.reservationID}/`
+    axios({
+      url: url,
+      method: "GET"
+    }).then(response => {
+      var success = this.$f7.toast.create({
+        text: "已取消预约",
+        position: "center",
+        closeTimeout: 2000
+      }).open();
+    }).catch(reason => {
+      this.$f7.toast.create({
+        text: "取消预约失败" + reason,
+        position: "center" ,
+        closeTimeout: 2000
+      }).open();
+    })
+  }
+
+  /**
+   * 执行座位预定
+   */
+  async bookSeat() {
+    try {
+      var book_rest: AxiosResponse<RestResponse<any>> = await axios({
+        url: "/rest/v2/freeBook",
+        method: "POST",
+        data: `"t=1&startTime=${this.startTime == "now" ? -1 : this.startTime}&endTime=${this.endTime}&seat=${this.seatID}&date=${this.date}&t2=2"`
+      })
+      if (book_rest.status == 200 && book_rest.data.status == "success") {
+        var toast = this.$f7.toast.create({
+          text: `已成功预约`,
+          position: "center"
+        })
+        toast.open();
+        await this.$delay(2000);
+        toast.close();
+        this.$f7router.navigate("/")
+      } else {
+        this.$f7.toast.create({
+          text: `预约失败: ${book_rest.data.message}`,
+          position: "center",
+          closeTimeout: 2000
+        });
+      }
+    } catch (error) {
+      this.$f7.toast.create({
+        text: `预约失败: ${error}`,
+        position: "center",
+        closeTimeout: 2000
+      });
+    }
+  }
+
   async submit() {
     switch (this.bookType) {
+      case "chageTime":
+        await this.releaseSeat();
       case "new":
-        try {
-          var book_rest: AxiosResponse<RestResponse<any>> = await axios({
-            url: "/rest/v2/freeBook",
-            method: "POST",
-            data: `"t=1&startTime=${this.startTime == "now" ? -1 : this.startTime}&endTime=${this.endTime}&seat=${this.seatID}&date=${this.date}&t2=2"`
-          })
-          if (book_rest.status == 200 && book_rest.data.status == "success") {
-            var toast = this.$f7.toast.create({
-              text: `已成功预约`,
-              position: "center"
-            })
-            toast.open();
-            await this.$delay(2000);
-            toast.close();
-            this.$f7router.navigate("/")
-          } else {
-            this.$f7.toast.create({
-              text: `预约失败: ${book_rest.data.message}`,
-              position: "center",
-              closeTimeout: 2000
-            });
-          }
-        } catch (error) {
-          this.$f7.toast.create({
-            text: `预约失败: ${error}`,
-            position: "center",
-            closeTimeout: 2000
-          });
-        }
+        await this.bookSeat();
         break;
       default:
         break;
