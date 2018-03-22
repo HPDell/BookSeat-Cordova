@@ -101,7 +101,7 @@ export default class HomePage extends Vue {
         this.seat.status = reservation.status;
         this.seat.reservationID = reservation.id;
         this.seat.date = reservation.onDate;
-      } else if (reservation_rest.status != "success") {
+      } else {
         throw "服务器返回错误"
       }
     } catch (error) {
