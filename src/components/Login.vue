@@ -21,6 +21,7 @@
     </f7-list>
     <f7-list inset>
       <f7-list-button @click="login">登录</f7-list-button>
+      <!-- <f7-list-button @click="test">测试</f7-list-button> -->
     </f7-list>
   </f7-page>
 </template>
@@ -31,11 +32,12 @@ import Component from 'vue-class-component';
 import axios from 'axios';
 import { RestResponse } from '../models/RestResponse';
 import { LoginData } from "../models/LoginData";
+import * as moment from 'moment';
 
 @Component
 export default class Login extends Vue {
-  userID: string = "";
-  userPassword: string = "";
+  userID: string = this.$sysparams.userID;
+  userPassword: string = this.$sysparams.userPassword;
   host: string = localStorage.host || this.$sysparams.host;
   vm: Vue;
   remember: boolean = true;
@@ -70,6 +72,8 @@ export default class Login extends Vue {
         this.$sysparams.token = body.data.token;
         // Store datas.
         localStorage.setItem("host", this.host);
+        localStorage.setItem("userID", this.userID);
+        localStorage.setItem("userPassword", this.userPassword);
         // Set axios defaults.
         axios.defaults.baseURL = `https://${this.$sysparams.host}:8443/`;
         axios.defaults.headers.common['token'] = this.$sysparams.token;
@@ -100,6 +104,23 @@ export default class Login extends Vue {
    */
   rememberChanged(remember: Boolean) {
     console.log(`是否记住：${remember}`)
+  }
+
+  async test() {
+    var progress = 0;
+    var dialog = this.$f7.dialog.progress("等待开始", 0);
+    var now = moment();
+    var schedule = moment().add(1, 'm').second(0).millisecond(0);
+    console.log("now", now.format("hh:mm:ss"))
+    console.log("schedule", schedule.format("hh:mm:ss"))
+    var diff = Math.ceil(schedule.diff(now) / 1000);
+    dialog.setText(diff + " s");
+    for (let i = 1; i <= diff; i++) {
+      await this.$delay(1000);
+      dialog.setText(diff - i + "s");
+      dialog.setProgress(i / diff * 100);
+    }
+    this.$f7.dialog.close();
   }
 }
 </script>

@@ -10,10 +10,10 @@ export class VueBookSysWebParams {
   avalibleDates: Array<string>;
   constructor(options?) {
     this.token = "";
-    this.userID = "";
+    this.userID = window.localStorage.getItem("userID");
     this.userName = "";
-    this.userPassword = "";
-    this.host = "seat.lib.whu.edu.cn";
+    this.userPassword = window.localStorage.getItem("userPassword");
+    this.host = localStorage.getItem("host");
     this.buildings = new Array<LibraryBuilding>();
     this.avalibleDates = new Array<string>();
     if (options) {

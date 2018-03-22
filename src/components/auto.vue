@@ -154,30 +154,47 @@ export default class AutoBook extends Vue {
         this.$f7.toast.create({
           text: `预约失败: ${book_rest.data.message}`,
           position: "center",
-          cancelTimeout: 2000
-        });
+          closeTimeout: 2000
+        }).open();
       }
     } catch (error) {
       this.$f7.toast.create({
         text: `预约失败: ${error}`,
         position: "center",
-        cancelTimeout: 2000
-      });
+        closeTimeout: 2000
+      }).open();
     }
   }
 
   async autoBookSeats() {
-    this.$f7.dialog.progress();
+    var progress = 0;
+    var dialog = this.$f7.dialog.progress("等待开始", 0);
     var now = moment();
-    this.schedule = moment().hour(22).minute(15).second(0).millisecond(500);
-    await this.$delay(this.schedule.diff(now));
-    this.$f7.dialog.close();
+    this.schedule = moment().hour(22).minute(15).second(0).millisecond(0);
+    if (now.isBefore(this.schedule)) {
+      var diff = Math.ceil(this.schedule.diff(now) / 1000);
+      dialog.setText(diff + "s");
+      for (let i = 1; i <= diff; i++) {
+        await this.$delay(1000);
+        dialog.setText(diff - i + "s");
+        dialog.setProgress(i / diff * 100);
+      }
+      this.$f7.dialog.close();
+    }
+    // await this.$delay(this.schedule.diff(now));
     this.bookSeat();
   }
 
   async mounted() {
     var now  = moment();
     this.schedule = moment().hour(22).minute(15).second(0).millisecond(500);
+    if (this.schedule.isBefore(now)) {
+      this.$f7.toast.create({
+        text: "已过抢座时间",
+        position: "center",
+        closeTimeout: 2000
+      }).open();
+    }
     await this.fetchBuildings();
   }
 }

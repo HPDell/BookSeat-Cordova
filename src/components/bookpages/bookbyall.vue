@@ -88,7 +88,7 @@ export default class BookByAll extends Vue {
             this.$f7.toast.create({
               text: `获取${room.room}的座位信息失败：${error}`,
               position: "top",
-              cancelTimeout: 2000
+              closeTimeout: 2000
             })
           } finally {
             await this.$delay(500);
@@ -101,7 +101,7 @@ export default class BookByAll extends Vue {
         this.$f7.toast.create({
           text: "获取房间信息失败：" + error,
           position: "top",
-          cancelTimeout: 2000
+          closeTimeout: 2000
         })
       }
     }

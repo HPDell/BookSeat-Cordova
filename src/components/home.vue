@@ -79,8 +79,8 @@ export default class HomePage extends Vue {
       this.$f7.toast.create({
         text: "获取用户信息失败",
         position: "center",
-        cancelTimeout: 2000
-      })
+        closeTimeout: 2000
+      }).open();
     }
     try {
       var reservation_response = await axios({
@@ -121,12 +121,9 @@ export default class HomePage extends Vue {
     }).then(response => {
       var success = this.$f7.toast.create({
         text: "已取消预约",
-        position: "center"
+        position: "center",
+        closeTimeout: 2000
       }).open();
-      setTimeout(() => {
-        success.close();
-        // this.$f7router.refreshPage();
-      }, 2000);
     }).catch(reason => {
       this.$f7.toast.create({
         text: "取消预约失败" + reason,

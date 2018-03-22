@@ -92,14 +92,14 @@ export default class SelectTime extends Vue {
             this.$f7.toast.create({
               text: `预约失败: ${book_rest.data.message}`,
               position: "center",
-              cancelTimeout: 2000
+              closeTimeout: 2000
             });
           }
         } catch (error) {
           this.$f7.toast.create({
             text: `预约失败: ${error}`,
             position: "center",
-            cancelTimeout: 2000
+            closeTimeout: 2000
           });
         }
         break;

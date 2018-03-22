@@ -100,13 +100,14 @@ export class LibraryRoom implements LibraryRoomData {
           for (const key in layout) {
             if (layout.hasOwnProperty(key)) {
               const element = layout[key];
-              if (key == "1") { console.log("Layout element: ", JSON.stringify(element)); }
               if (element.type == "seat") {
                 seats.push(new LibrarySeat(element));
               }
             }
           }
-          this.roomSeats = seats;
+          this.roomSeats = seats.sort((a, b) => {
+            return a.name < b.name ? -1 : 1;
+          })
         } else {
           throw "服务器已成功响应，但没有返回数据"
         }
