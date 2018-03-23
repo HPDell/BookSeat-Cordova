@@ -180,6 +180,8 @@ export default class BookByAll extends Vue {
               await seat.fetchStartTime(bookDate);
             } catch (error) {
               console.log(error)
+            } finally {
+              await this.$delay(500);
             }
           }
           var startTimeIndex = seat.startTimes.findIndex(value => {
@@ -192,9 +194,10 @@ export default class BookByAll extends Vue {
               });
             } catch (error) {
               console.log(error)
+            } finally {
+              await this.$delay(500);
             }
           }
-          this.$delay(500);
         }
       }
     }
