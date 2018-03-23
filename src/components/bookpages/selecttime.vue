@@ -9,6 +9,7 @@
         select(name="endTime" v-model="endTime")
           option(v-for="end in endTimeList" :value="end.id" :key="end.id") {{ end.value }}
       f7-list-button(title="提交", @click="submit()")
+      f7-block-footer(v-if="bookType == 'changeTime'") 改签所提供的时间是当日所有预约座位的合法时间，不是该座位的可用时间，座位是否可用需自行确认。
 </template>
 
 <script lang="ts">
@@ -86,7 +87,7 @@ export default class SelectTime extends Vue {
       hour: 22,
       minute: 0
     }));
-    this.endTimeList = endTimeList;
+    this.endTimeList = endTimeList.slice(1);
   }
 
   async mounted() {

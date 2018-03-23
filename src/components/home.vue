@@ -55,7 +55,7 @@ export default class HomePage extends Vue {
     return this.seat.seatID > 0
   }
   get changeTimeHref() {
-    return `/selectTime/chageTime/${this.seat.date}/${this.seat.seatID}/?status=${this.seat.status}&reservationID=${this.seat.reservationID}`;
+    return `/selectTime/changeTime/${this.seat.date}/${this.seat.seatID}/?status=${this.seat.status}&reservationID=${this.seat.reservationID}`;
   }
 
   async fetchUserData() {
