@@ -57,23 +57,52 @@ export default class HomePage extends Vue {
   get changeTimeHref() {
     return `/selectTime/chageTime/${this.seat.date}/${this.seat.seatID}/?status=${this.seat.status}&reservationID=${this.seat.reservationID}`;
   }
+
+  async fetchUserData() {
+    var user_response = await axios({
+      url: "/rest/v2/user/",
+      method: "GET"
+    });
+    var user_rest: RestResponse<UserData> = user_response.data;
+    if (user_rest.status == "success") {
+      this.user.userName = user_rest.data.name;
+      this.user.status = user_rest.data.status;
+    } else {
+      throw "请求不正确";
+    }
+  }
+
+  async fetchReservations() {
+    var reservation_response = await axios({
+      url: "/rest/v2/user/reservations",
+      method: "GET"
+    });
+    var reservation_rest: RestResponse<Array<UserReservationData>> = reservation_response.data;
+    if (reservation_rest.status == "success" && reservation_rest.data && reservation_rest.data.length > 0) {
+      var reservation = new UserReservation(reservation_rest.data.pop());
+      this.seat.building = reservation.building;
+      this.seat.floor = reservation.floor + "层";
+      this.seat.room = reservation.room;
+      this.seat.seatID = reservation.seatId;
+      this.seat.seatNumber = reservation.seatNumber;
+      this.seat.startTime = reservation.begin;
+      this.seat.endTime = reservation.end;
+      this.seat.leaveTime = reservation.awayBegin;
+      this.seat.status = reservation.status;
+      this.seat.reservationID = reservation.id;
+      this.seat.date = reservation.onDate;
+    } else {
+      throw "服务器返回错误"
+    }
+  }
+
   async beforeMount() {
     if (!(this.$sysparams.token && this.$sysparams.token != "")) {
       return;
     }
     // Fetch data.
     try {
-      var user_response = await axios({
-        url: "/rest/v2/user/",
-        method: "GET"
-      });
-      var user_rest: RestResponse<UserData> = user_response.data;
-      if (user_rest.status == "success") {
-        this.user.userName = user_rest.data.name;
-        this.user.status = user_rest.data.status;
-      } else {
-        throw "请求不正确";
-      }
+      await this.fetchUserData();
     } catch (error) {
       // @ts-ignore
       this.$f7.toast.create({
@@ -83,27 +112,7 @@ export default class HomePage extends Vue {
       }).open();
     }
     try {
-      var reservation_response = await axios({
-        url: "/rest/v2/user/reservations",
-        method: "GET"
-      });
-      var reservation_rest: RestResponse<Array<UserReservationData>> = reservation_response.data;
-      if (reservation_rest.status == "success" && reservation_rest.data && reservation_rest.data.length > 0) {
-        var reservation = new UserReservation(reservation_rest.data.pop());
-        this.seat.building = reservation.building;
-        this.seat.floor = reservation.floor + "层";
-        this.seat.room = reservation.room;
-        this.seat.seatID = reservation.seatId;
-        this.seat.seatNumber = reservation.seatNumber;
-        this.seat.startTime = reservation.begin;
-        this.seat.endTime = reservation.end;
-        this.seat.leaveTime = reservation.awayBegin;
-        this.seat.status = reservation.status;
-        this.seat.reservationID = reservation.id;
-        this.seat.date = reservation.onDate;
-      } else {
-        throw "服务器返回错误"
-      }
+      await this.fetchReservations();
     } catch (error) {
       // @ts-ignore
       this.$f7.toast.create({

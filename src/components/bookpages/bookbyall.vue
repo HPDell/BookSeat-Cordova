@@ -93,7 +93,6 @@ export default class BookByAll extends Vue {
           } finally {
             await this.$delay(500);
           }
-          break;
         }
         this.$f7.dialog.close();
       } catch (error) {

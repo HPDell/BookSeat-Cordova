@@ -15,15 +15,20 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 import axios,{ AxiosResponse } from 'axios'
-import { LibrarySeat, LibrarySeatTime } from '../../models/LibraryModel';
+import { LibrarySeat, LibrarySeatTime, LibrarySeatData } from '../../models/LibraryModel';
 import { RestResponse } from '../../models/RestResponse';
+import * as moment from 'moment';
 
 @Component<SelectTime>({
   watch: {
     startTime: async function (newValue:string) {
-      this.endTimeList = await this.targetSeat.fetchEndTime(this.date, new LibrarySeatTime({
-        id: newValue
-      }))
+      if (this.bookType == "new") {
+        this.endTimeList = await this.targetSeat.fetchEndTime(this.date, new LibrarySeatTime({
+          id: newValue
+        }))
+      } else {
+        
+      }
     }
   }
 })
@@ -38,11 +43,8 @@ export default class SelectTime extends Vue {
   roomID: number = 0;
   seatID: number = 0;
   targetSeat: any = {};
+  startTimeList: LibrarySeatTime[] = [];
   endTimeList: LibrarySeatTime[] = [];
-
-  get startTimeList() {
-    return this.targetSeat.startTimes;
-  }
 
   async created() {
     this.date = this.params.bookDate;
@@ -52,22 +54,63 @@ export default class SelectTime extends Vue {
     this.roomID = this.query.roomID;
   }
 
-  async mounted() {
-    // 获取座位数据
-    var seatID = this.seatID;
-    var buildingID = this.buildingID;
-    var roomID = this.roomID;
-    var seat = this.$sysparams.buildings.find(value => {
-      return value.buildingID == buildingID;
-    }).buildingRooms.find(value => {
-      return value.roomId == roomID;
-    }).roomSeats.find(value => {
-      return value.id == seatID;
-    });
-    if (!(seat.startTimes && seat.startTimes.length > 0)) {
-      await seat.fetchStartTime(this.date);
+  createStartTimes() {
+    var now = moment();
+    var hour = now.hour();
+    var minute = now.minute();
+    var startTimeList: LibrarySeatTime[] = [];
+    if (minute < 30) {
+      startTimeList.push(new LibrarySeatTime({
+        hour: hour,
+        minute: 30
+      }))
     }
-    this.targetSeat = seat;
+    for (let h = hour + 1; h < 22; h++) {
+      startTimeList.push(new LibrarySeatTime({
+        hour: h,
+        minute: 0
+      }));
+      startTimeList.push(new LibrarySeatTime({
+        hour: h,
+        minute: 30
+      }));
+      this.startTimeList = startTimeList;
+    }
+  }
+
+  createEndTimes() {
+    var endTimeList: LibrarySeatTime[] = this.startTimeList.map(value => {
+      return new LibrarySeatTime(value);
+    })
+    endTimeList.push(new LibrarySeatTime({
+      hour: 22,
+      minute: 0
+    }));
+    this.endTimeList = endTimeList;
+  }
+
+  async mounted() {
+    if (this.bookType == "new") {
+      // 获取座位数据
+      var seatID = this.seatID;
+      var buildingID = this.buildingID;
+      var roomID = this.roomID;
+      var seat = this.$sysparams.buildings.find(value => {
+        return value.buildingID == buildingID;
+      }).buildingRooms.find(value => {
+        return value.roomId == roomID;
+      }).roomSeats.find(value => {
+        return value.id == seatID;
+      });
+      if (!(seat.startTimes && seat.startTimes.length > 0)) {
+        await seat.fetchStartTime(this.date);
+        this.startTimeList = seat.startTimes;
+      }
+      this.targetSeat = seat;
+    } else if (this.bookType == "changeTime") {
+      this.createStartTimes();
+      this.createEndTimes();
+    }
   }
 
   /**

@@ -101,10 +101,10 @@ export default class AutoBook extends Vue {
         }))
       }
     }
-    endTimes.push({
+    endTimes.push(new LibrarySeatTime({
       hour: 22,
       minute: 0
-    })
+    }));
     return endTimes.slice(1);
   }
 
